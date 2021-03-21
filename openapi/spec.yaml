@@ -1,0 +1,9 @@
+openapi: 3.0.3
+info:
+  title: PGW Payment Processor Service
+  description: |
+    The primary function of this service is to simulate a payment processor system.
+  version: 1.0.0
+  contact:
+    name: Gustavo Ferreira
+    email: gustavojcoferreira@gmail.com
