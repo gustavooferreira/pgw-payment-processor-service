@@ -49,7 +49,7 @@ The docker image is named `pgw/payment-processor-api-server`.
 Create a file with some credit cards and reasons to fail, like this:
 
 ```yaml
-credit_cards:
+creditCards:
   4000000000000119: "authorise"
   4000000000000259: "capture"
   4000000000003238: "refund"
