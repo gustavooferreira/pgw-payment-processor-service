@@ -20,23 +20,23 @@ func TestCreditCardShouldFail(t *testing.T) {
 		"no fail":        {ccNumber: 123, expectedResult: false},
 	}
 
-	cch := createCreditCardsHolder()
+	ccfc := createCreditCardFileChecker()
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 
-			value := cch.ShouldFail(test.ccNumber, test.reason)
+			value := ccfc.ShouldFail(test.ccNumber, test.reason)
 			assert.Equal(t, test.expectedResult, value)
 		})
 	}
 }
 
-func createCreditCardsHolder() *repository.CreditCardsHolder {
-	cch := repository.NewCreditCardsHolder()
+func createCreditCardFileChecker() *repository.CreditCardFileChecker {
+	ccfc := repository.NewCreditCardFileChecker()
 
-	cch.CreditCards[4000000000000119] = core.CCFailReason_Authorise
-	cch.CreditCards[4000000000000259] = core.CCFailReason_Capture
-	cch.CreditCards[4000000000003238] = core.CCFailReason_Refund
+	ccfc.CreditCards[4000000000000119] = core.CCFailReason_Authorise
+	ccfc.CreditCards[4000000000000259] = core.CCFailReason_Capture
+	ccfc.CreditCards[4000000000003238] = core.CCFailReason_Refund
 
-	return &cch
+	return ccfc
 }

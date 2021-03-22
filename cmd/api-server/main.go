@@ -36,24 +36,25 @@ func mainLogic() int {
 	// something like this:
 	// logger.SetLevel(config.Options.LogLevel)
 
-	// Read credit cards and reason to fail and populate edge cases struct
+	// Read credit cards and reason to fail from yaml file and populate edge cases struct
 	yamlContent, err := ioutil.ReadFile(config.Options.CreditCards.Filename)
 	if err != nil {
 		logger.Error(err.Error(), log.Field("type", "setup"))
 		return 1
 	}
 
-	creditcardsHolder := repository.NewCreditCardsHolder()
-	err = creditcardsHolder.Load(yamlContent)
+	creditCardFileChecker := repository.NewCreditCardFileChecker()
+	err = creditCardFileChecker.Load(yamlContent)
 	if err != nil {
 		logger.Error(err.Error(), log.Field("type", "setup"))
 		return 1
 	}
 
 	// Init Authtracker
-	authTracker := repository.NewAuthTracker()
+	authTracker := repository.NewAuthoriserInMemoryTracker()
 
-	server := api.NewServer(config.Webserver.Host, config.Webserver.Port, config.Options.DevMode, logger, &creditcardsHolder, &authTracker)
+	server := api.NewServer(config.Webserver.Host, config.Webserver.Port, config.Options.DevMode,
+		logger, creditCardFileChecker, authTracker)
 
 	// Spawn SIGINT listener
 	go lifecycle.TerminateHandler(logger, server)

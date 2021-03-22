@@ -16,7 +16,7 @@ import (
 // Server is the webserver environment, which holds all its dependencies.
 type Server struct {
 	Logger     log.Logger
-	Repo       core.Repository
+	Repo       core.CreditCardChecker
 	Authoriser core.Authoriser
 
 	Router     *gin.Engine
@@ -24,7 +24,7 @@ type Server struct {
 }
 
 // NewServer creates a new server.
-func NewServer(addr string, port int, devMode bool, logger log.Logger, repo core.Repository, authoriser core.Authoriser) *Server {
+func NewServer(addr string, port int, devMode bool, logger log.Logger, repo core.CreditCardChecker, authoriser core.Authoriser) *Server {
 	s := &Server{Logger: logger, Repo: repo, Authoriser: authoriser}
 
 	if !devMode {

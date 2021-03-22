@@ -1,0 +1,4 @@
+creditCards:
+  4000000000000119: "authorise fail"
+  4000000000000259: "capture fail"
+  4000000000003238: "refund fail"

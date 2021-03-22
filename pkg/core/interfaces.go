@@ -2,8 +2,8 @@ package core
 
 import "context"
 
-// Repository represents a database holding credentials
-type Repository interface {
+// CreditCardChecker represents a database holding credentials
+type CreditCardChecker interface {
 	ShouldFail(ccNumber int64, reason CCFailReason) bool
 }
 

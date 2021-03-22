@@ -1,7 +1,6 @@
 package core
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 )
@@ -32,6 +31,7 @@ var ccFailReasonToEnum = map[string]CCFailReason{
 	"void fail":      CCFailReason_Void,
 }
 
+// Load loads a reason into CCFailReason
 func (ccfr *CCFailReason) Load(reason string) error {
 	if reasonEnum, ok := ccFailReasonToEnum[reason]; ok {
 		*ccfr = reasonEnum
@@ -40,23 +40,7 @@ func (ccfr *CCFailReason) Load(reason string) error {
 	return fmt.Errorf("unknown reason to fail")
 }
 
-// UnmarshalJSON unmashals a quoted json string to the CCFaiLReason Enum
-func (ccfr *CCFailReason) UnmarshalJSON(data []byte) error {
-	var j string
-	err := json.Unmarshal(data, &j)
-	if err != nil {
-		return err
-	}
-
-	result, ok := ccFailReasonToEnum[j]
-	if !ok {
-		return errors.New("couldn't find matching CCFailReason enum value")
-	}
-
-	*ccfr = result
-	return nil
-}
-
+// UnmarshalYAML unmarshals a quoted yaml string to the CCFailReason Enum
 func (ccfr *CCFailReason) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var j string
 	err := unmarshal(&j)

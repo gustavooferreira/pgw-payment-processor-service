@@ -5,28 +5,27 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// CreditCardsHolder holds the credit cards number and the reason to fail.
+// CreditCardFileChecker holds the credit cards number and the reason to fail.
 // This struct mimics a database.
-type CreditCardsHolder struct {
+type CreditCardFileChecker struct {
 	CreditCards map[int64]core.CCFailReason `yaml:"creditCards"`
 }
 
-// NewCreditCardsHolder creates a new CreditCardsHolder.
-func NewCreditCardsHolder() CreditCardsHolder {
-	ch := CreditCardsHolder{CreditCards: make(map[int64]core.CCFailReason)}
-	return ch
+// NewCreditCardFileChecker creates a new CreditCardsHolder.
+func NewCreditCardFileChecker() *CreditCardFileChecker {
+	ccfc := CreditCardFileChecker{CreditCards: make(map[int64]core.CCFailReason)}
+	return &ccfc
 }
 
-// Load loads data into the CreditCardsHolder.
-func (cch *CreditCardsHolder) Load(data []byte) error {
-	err := yaml.Unmarshal([]byte(data), &cch)
+// Load loads data into the CreditCardFileChecker.
+func (ccfc *CreditCardFileChecker) Load(data []byte) error {
+	err := yaml.Unmarshal([]byte(data), &ccfc)
 	return err
 }
 
-// Fail checks whether the provided credit card number should fail.
-// If yes, returns the reason.
-func (cch *CreditCardsHolder) ShouldFail(ccNumber int64, reason core.CCFailReason) bool {
-	if v, ok := cch.CreditCards[ccNumber]; ok {
+// ShouldFail checks whether the provided credit card number should fail for the provided reason.
+func (ccfc *CreditCardFileChecker) ShouldFail(ccNumber int64, reason core.CCFailReason) bool {
+	if v, ok := ccfc.CreditCards[ccNumber]; ok {
 		if reason == v {
 			return true
 		}

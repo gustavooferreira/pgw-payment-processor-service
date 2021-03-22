@@ -8,14 +8,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAuthTrackerAuthorise(t *testing.T) {
-	at := repository.NewAuthTracker()
+func TestAuthorisation(t *testing.T) {
+	auth := repository.NewAuthoriserInMemoryTracker()
 
 	var ccNumber int64 = 4000000000000119
 
-	uid := at.Authorise(ccNumber)
+	uid := auth.Authorise(ccNumber)
 
-	number, ok := at.GetAssociatedCreditCard(uid)
+	number, ok := auth.GetAssociatedCreditCard(uid)
 	require.Equal(t, true, ok)
 	assert.Equal(t, ccNumber, number)
 }
