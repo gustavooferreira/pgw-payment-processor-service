@@ -37,7 +37,7 @@ func mainLogic() int {
 	// logger.SetLevel(config.Options.LogLevel)
 
 	// Read credit cards and reason to fail and populate edge cases struct
-	yamlContent, err := ioutil.ReadFile(config.Database.Filename)
+	yamlContent, err := ioutil.ReadFile(config.Options.CreditCards.Filename)
 	if err != nil {
 		logger.Error(err.Error(), log.Field("type", "setup"))
 		return 1

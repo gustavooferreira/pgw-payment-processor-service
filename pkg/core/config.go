@@ -17,7 +17,6 @@ const AppPrefix = "PGW_PAYMENT_PROCESSOR_APP"
 type Configuration struct {
 	Webserver WebserverConfiguration
 	Options   OptionsConfiguration
-	Database  DatabaseConfiguration
 }
 
 // WebserverConfiguration holds configuration related to the webserver
@@ -32,11 +31,12 @@ type OptionsConfiguration struct {
 	// and also, enables pprof
 	DevMode bool
 
-	LogLevel log.Level
+	LogLevel    log.Level
+	CreditCards CreditCardsConfiguration
 }
 
-// DatabaseConfiguration holds configuration related to the database holding users credentials
-type DatabaseConfiguration struct {
+// CreditCardsConfiguration holds configuration related to credit cards edge cases file.
+type CreditCardsConfiguration struct {
 	Filename string
 }
 
@@ -60,24 +60,24 @@ func (config *Configuration) LoadConfig() (err error) {
 		}
 	}
 
-	if devMode, ok := os.LookupEnv(AppPrefix + "_DEV_MODE"); ok {
+	if devMode, ok := os.LookupEnv(AppPrefix + "_OPTIONS_DEV_MODE"); ok {
 		config.Options.DevMode, err = strconv.ParseBool(devMode)
 		if err != nil {
 			return fmt.Errorf("configuration error: [options devmode] unrecognizable boolean <%s>", devMode)
 		}
 	}
 
-	if logLevel, ok := os.LookupEnv(AppPrefix + "_LOG_LEVEL"); ok {
+	if logLevel, ok := os.LookupEnv(AppPrefix + "_OPTIONS_LOG_LEVEL"); ok {
 		config.Options.LogLevel, err = ParseLogLevel(logLevel)
 		if err != nil {
 			return fmt.Errorf("configuration error: [options loglevel] unrecognized log level")
 		}
 	}
 
-	if dbFileName, ok := os.LookupEnv(AppPrefix + "_DATABASE_FILENAME"); ok {
-		config.Database.Filename = dbFileName
+	if dbFileName, ok := os.LookupEnv(AppPrefix + "_OPTIONS_CREDITCARDS_FILENAME"); ok {
+		config.Options.CreditCards.Filename = dbFileName
 	} else {
-		return fmt.Errorf("configuration error: [database filename] mandatory config parameter missing")
+		return fmt.Errorf("configuration error: [creditcards filename] mandatory config parameter missing")
 	}
 
 	return nil

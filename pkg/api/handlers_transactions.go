@@ -29,11 +29,9 @@ func (s *Server) AuthoriseTransaction(c *gin.Context) {
 	}
 
 	// Check if we should fail
-	if reason, ok := s.Repo.ShouldFail(bodyData.CreditCard.Number); ok {
-		if reason == core.CCFailReason_Authorise {
-			c.JSON(200, gin.H{"code": 2})
-			return
-		}
+	if ok := s.Repo.ShouldFail(bodyData.CreditCard.Number, core.CCFailReason_Authorise); ok {
+		c.JSON(200, gin.H{"code": 2})
+		return
 	}
 
 	uid := s.Authoriser.Authorise(bodyData.CreditCard.Number)
@@ -56,11 +54,9 @@ func (s *Server) CaptureTransaction(c *gin.Context) {
 
 	// Check if we should fail
 	if ccNumber, ok := s.Authoriser.GetAssociatedCreditCard(bodyData.AuthorisationID); ok {
-		if reason, ok := s.Repo.ShouldFail(ccNumber); ok {
-			if reason == core.CCFailReason_Capture {
-				c.JSON(200, gin.H{"code": 2})
-				return
-			}
+		if ok := s.Repo.ShouldFail(ccNumber, core.CCFailReason_Capture); ok {
+			c.JSON(200, gin.H{"code": 2})
+			return
 		}
 	}
 
@@ -82,12 +78,9 @@ func (s *Server) VoidTransaction(c *gin.Context) {
 
 	// Check if we should fail
 	if ccNumber, ok := s.Authoriser.GetAssociatedCreditCard(bodyData.AuthorisationID); ok {
-		if reason, ok := s.Repo.ShouldFail(ccNumber); ok {
-			if reason == core.CCFailReason_Void {
-
-				c.JSON(200, gin.H{"code": 2})
-				return
-			}
+		if ok := s.Repo.ShouldFail(ccNumber, core.CCFailReason_Void); ok {
+			c.JSON(200, gin.H{"code": 2})
+			return
 		}
 	}
 
@@ -110,11 +103,9 @@ func (s *Server) RefundTransaction(c *gin.Context) {
 
 	// Check if we should fail
 	if ccNumber, ok := s.Authoriser.GetAssociatedCreditCard(bodyData.AuthorisationID); ok {
-		if reason, ok := s.Repo.ShouldFail(ccNumber); ok {
-			if reason == core.CCFailReason_Refund {
-				c.JSON(200, gin.H{"code": 2})
-				return
-			}
+		if ok := s.Repo.ShouldFail(ccNumber, core.CCFailReason_Refund); ok {
+			c.JSON(200, gin.H{"code": 2})
+			return
 		}
 	}
 

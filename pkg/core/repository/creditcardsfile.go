@@ -25,9 +25,11 @@ func (cch *CreditCardsHolder) Load(data []byte) error {
 
 // Fail checks whether the provided credit card number should fail.
 // If yes, returns the reason.
-func (cch *CreditCardsHolder) ShouldFail(ccNumber int64) (reason core.CCFailReason, fail bool) {
-	if reason, ok := cch.CreditCards[ccNumber]; ok {
-		return reason, true
+func (cch *CreditCardsHolder) ShouldFail(ccNumber int64, reason core.CCFailReason) bool {
+	if v, ok := cch.CreditCards[ccNumber]; ok {
+		if reason == v {
+			return true
+		}
 	}
-	return 0, false
+	return false
 }

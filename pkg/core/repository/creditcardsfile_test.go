@@ -6,19 +6,18 @@ import (
 	"github.com/gustavooferreira/pgw-payment-processor-service/pkg/core"
 	"github.com/gustavooferreira/pgw-payment-processor-service/pkg/core/repository"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestCreditCardShouldFail(t *testing.T) {
 	tests := map[string]struct {
 		ccNumber       int64
-		expectedFail   bool
-		expectedReason core.CCFailReason
+		reason         core.CCFailReason
+		expectedResult bool
 	}{
-		"authorise fail": {ccNumber: 4000000000000119, expectedFail: true, expectedReason: core.CCFailReason_Authorise},
-		"capture fail":   {ccNumber: 4000000000000259, expectedFail: true, expectedReason: core.CCFailReason_Capture},
-		"refund fail":    {ccNumber: 4000000000003238, expectedFail: true, expectedReason: core.CCFailReason_Refund},
-		"no fail":        {ccNumber: 123, expectedFail: false},
+		"authorise fail": {ccNumber: 4000000000000119, reason: core.CCFailReason_Authorise, expectedResult: true},
+		"capture fail":   {ccNumber: 4000000000000259, reason: core.CCFailReason_Capture, expectedResult: true},
+		"refund fail":    {ccNumber: 4000000000003238, reason: core.CCFailReason_Refund, expectedResult: true},
+		"no fail":        {ccNumber: 123, expectedResult: false},
 	}
 
 	cch := createCreditCardsHolder()
@@ -26,12 +25,8 @@ func TestCreditCardShouldFail(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 
-			reason, fail := cch.ShouldFail(test.ccNumber)
-			require.Equal(t, test.expectedFail, fail)
-
-			if test.expectedFail {
-				assert.Equal(t, test.expectedReason, reason)
-			}
+			value := cch.ShouldFail(test.ccNumber, test.reason)
+			assert.Equal(t, test.expectedResult, value)
 		})
 	}
 }

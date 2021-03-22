@@ -58,15 +58,15 @@ creditCards:
 And start a docker container like this:
 
 ```bash
-docker run --rm --name pgw-payment-processor-service -p 127.0.0.1:9000:8080/tcp -v "$(pwd)"/credit_cards.yaml:/credit_cards.yaml:ro -e PGW_PAYMENT_PROCESSOR_APP_OPTIONS_CREDITCARDS_FILENAME=/credit_cards.yaml pgw/payment-processor-api-server
+docker run --rm --name pgw-payment-processor-service -p 127.0.0.1:9000:8080/tcp -v "$(pwd)"/edge_cases_credit_cards.yaml:/edge_cases_credit_cards.yaml:ro -e PGW_PAYMENT_PROCESSOR_APP_OPTIONS_CREDITCARDS_FILENAME=/edge_cases_credit_cards.yaml pgw/payment-processor-api-server
 ```
 
-This assumes the yaml file created is called `credit_cards.yaml` and is placed in the current directory.
+This assumes the yaml file created is called `edge_cases_credit_cards.yaml` and is placed in the current directory.
 
 Once the container is running, you can make a request like this:
 
 ```bash
-curl -i -X POST http://localhost:9000/api/v1/authorise -d '{"":""}'
+curl -i -X POST http://localhost:9000/api/v1/authorise -d '{"credit_card": {"name":"customer1", "number": 4000000000000118, "expiry_month":10, "expiry_year":2030, "cvv":123}, "currency": "EUR", "amount": 10.50}'
 ```
 
 # Design

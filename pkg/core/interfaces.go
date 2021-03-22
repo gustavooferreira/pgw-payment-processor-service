@@ -4,7 +4,7 @@ import "context"
 
 // Repository represents a database holding credentials
 type Repository interface {
-	ShouldFail(ccNumber int64) (reason CCFailReason, fail bool)
+	ShouldFail(ccNumber int64, reason CCFailReason) bool
 }
 
 type Authoriser interface {
