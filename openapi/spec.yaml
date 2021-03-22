@@ -7,3 +7,262 @@ info:
   contact:
     name: Gustavo Ferreira
     email: gustavojcoferreira@gmail.com
+servers:
+- url: http://localhost:{port}{basePath}
+  description: Local development
+  variables:
+    port:
+      default: '8080'
+      enum:
+      - '8080'
+    basePath:
+      default: '/api/v1'
+      enum:
+      - '/api/v1'
+tags:
+- name: maintenance
+  description: Service maintenance operations
+- name: payments
+  description: Payment processing operations
+paths:
+  /healthcheck:
+    get:
+      tags:
+      - maintenance
+      summary: Check API service health
+      description: Returns status of the API service.
+      responses:
+        '200':
+          description: Service is OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthcheckResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /authorise:
+    post:
+      tags:
+      - payments
+      summary: Authorise payment
+      description: This endpoint is used to get an authorisation to charge the provided credit card.
+      requestBody:
+        description: charge details
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/PaymentDetails'
+      responses:
+        '200':
+          description: |
+            This API returns 200 for both authorised and unautherised payments. The body of the response will
+            report whether the payment was authorised or not.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /capture:
+    post:
+      tags:
+      - payments
+      summary: Capture payment
+      description: This endpoint is used to consummate a authorised payment.
+      requestBody:
+        description: charge details
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/ChargeDetails'
+      responses:
+        '200':
+          description: |
+            This API returns 200 for both successful and failed charges. The body of the response will
+            report whether the call was successful or not.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /void:
+    post:
+      tags:
+      - payments
+      summary: void payment
+      description: This endpoint is used to void previous authorisation.
+      requestBody:
+        description: void details
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/VoidRequest'
+      responses:
+        '200':
+          description: |
+            This API returns 200 for both successful and failed calls. The body of the response will
+            report whether the call was successful or not.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /refund:
+    post:
+      tags:
+      - payments
+      summary: refund payment
+      description: This endpoint is used to refund previous charges.
+      requestBody:
+        description: refund details
+        required: true
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/RefundDetails'
+      responses:
+        '200':
+          description: |
+            This API returns 200 for both successful and failed refunds. The body of the response will
+            report whether the call was successful or not.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  responses:
+    BadRequest:
+      description: Invalid Parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorResponse'
+    InternalError:
+      description: Internal Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorResponse'
+  schemas:
+    HealthcheckResponse:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          type: string
+          enum:
+          - OK
+    ApiErrorResponse:
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          type: string
+          description: Message explaining the error reason.
+    PaymentDetails:
+      type: object
+      required:
+      - credit_card
+      - currency
+      - amount
+      properties:
+        credit_card:
+          $ref: '#/components/schemas/CreditCard'
+        currency:
+          type: string
+        amount:
+          type: number
+    CreditCard:
+      type: object
+      required:
+      - name
+      - number
+      - expiry_month
+      - expiry_yeah
+      - cvv
+      properties:
+        name:
+          type: string
+        number:
+          type: integer
+          format: int64
+        expiry_month:
+          type: integer
+          minimum: 1
+          maximum: 12
+        expiry_year:
+          type: integer
+          minimum: 2000
+        cvv:
+          type: integer
+          minimum: 1
+          maximum: 999
+    AuthResponse:
+      type: object
+      required:
+      - code
+      properties:
+        code:
+          description: Authorised payment returns code 1, and unauthorised payment returns code 2.
+          type: integer
+          enum:
+          - 1
+          - 2
+        authorisation_id:
+          description: If the charge is authorised it returns an authorisation ID.
+          type: string
+    ChargeDetails:
+      type: object
+      required:
+      - authorisation_id
+      - amount
+      properties:
+        authorisation_id:
+          type: string
+        amount:
+          type: number
+    Response:
+      type: object
+      required:
+      - code
+      properties:
+        code:
+          description: Successful call returns code 1, and failed call returns code 2.
+          type: integer
+          enum:
+          - 1
+          - 2
+    VoidRequest:
+      type: object
+      required:
+      - authorisation_id
+      properties:
+        authorisation_id:
+          type: string
+    RefundDetails:
+      type: object
+      required:
+      - authorisation_id
+      - amount
+      properties:
+        authorisation_id:
+          type: string
+        amount:
+          type: number

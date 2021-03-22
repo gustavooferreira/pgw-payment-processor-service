@@ -71,3 +71,20 @@ curl -i -X POST http://localhost:9000/api/v1/authorise -d '{"":""}'
 
 # Design
 
+This service serves as a light dependency for the payment gateway service. Its purpose is to mimic the behavior of a potential payment processor.
+
+This service is pretty dumb, it doesn't check for any constraints and it doesn't rely on a database. In fact, this service will reply successfully to all calls made to it except for a specific number of credit cards specified in a yaml file.
+
+This service reads credit cards and their reason to fail from a yaml file.
+
+This service holds current state in memory which means once restarted all that state is lost, and that's fine for testing purposes.
+
+This service is also responsible for generating a `UID` for each `authorisation` call, as I'm assuming that's how it works in the real world.
+
+It's not meant to be production ready by any means. I'm not using a database to simplify the service, as this service was only created so the payment gateway can simulate talking to an external system to process the payment.
+
+The OpenAPI spec is located in the `openapi` folder.
+
+To view the spec in the Swagger UI [click this link](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/gustavooferreira/pgw-payment-processor-service/master/openapi/spec.yaml).
+
+The requests to this service should go through an authentication/authorization process as well. I have not implemented this to keep the service simple.
