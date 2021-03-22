@@ -50,9 +50,9 @@ Create a file with some credit cards and reasons to fail, like this:
 
 ```yaml
 credit_cards:
-  4000000000000119: "authorisation failure"
-  4000000000000259: "capture failure"
-  4000000000003238: "refund failure"
+  4000000000000119: "authorise"
+  4000000000000259: "capture"
+  4000000000003238: "refund"
 ```
 
 And start a docker container like this:
